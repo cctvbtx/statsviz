@@ -1,11 +1,11 @@
 // ui holds the user interface state
-var ui = (function () {
+var ui = (function() {
     var m = {};
 
     let paused = false;
 
-    m.isPaused = function () { return paused; }
-    m.togglePause = function () { paused = !paused; }
+    m.isPaused = function() { return paused; }
+    m.togglePause = function() { paused = !paused; }
     m.plots = null;
 
     function GCLines(data) {
@@ -40,8 +40,7 @@ var ui = (function () {
     }
 
     function heapData(data) {
-        return [
-            {
+        return [{
                 x: data.times,
                 y: data.heap[0],
                 type: 'scatter',
@@ -95,8 +94,7 @@ var ui = (function () {
     };
 
     function mspanMCacheData(data) {
-        return [
-            {
+        return [{
                 x: data.times,
                 y: data.mspanMCache[0],
                 type: 'scatter',
@@ -150,18 +148,16 @@ var ui = (function () {
     ];
 
     function sizeClassesData(data) {
-        var ret = [
-            {
-                x: data.times,
-                y: stats.classSizes,
-                z: data.bySizes,
-                type: 'heatmap',
-                hovertemplate: '<br><b>size class</b>: %{y:} B' +
-                    '<br><b>objects</b>: %{z}<br>',
-                showlegend: false,
-                colorscale: colorscale,
-            }
-        ];
+        var ret = [{
+            x: data.times,
+            y: stats.classSizes,
+            z: data.bySizes,
+            type: 'heatmap',
+            hovertemplate: '<br><b>size class</b>: %{y:} B' +
+                '<br><b>objects</b>: %{z}<br>',
+            showlegend: false,
+            colorscale: colorscale,
+        }];
         return ret;
     }
 
@@ -178,8 +174,7 @@ var ui = (function () {
     };
 
     function objectsData(data) {
-        return [
-            {
+        return [{
                 x: data.times,
                 y: data.objects[0],
                 type: 'scatter',
@@ -215,15 +210,13 @@ var ui = (function () {
     };
 
     function goroutinesData(data) {
-        return [
-            {
-                x: data.times,
-                y: data.goroutines,
-                type: 'scatter',
-                name: 'goroutines',
-                hovertemplate: '<b>goroutines</b>: %{y}',
-            },
-        ]
+        return [{
+            x: data.times,
+            y: data.goroutines,
+            type: 'scatter',
+            name: 'goroutines',
+            hovertemplate: '<b>goroutines</b>: %{y}',
+        }, ]
     }
 
     let goroutinesLayout = {
@@ -238,15 +231,13 @@ var ui = (function () {
     };
 
     function gcFractionData(data) {
-        return [
-            {
-                x: data.times,
-                y: data.gcfraction,
-                type: 'scatter',
-                name: 'gc/cpu',
-                hovertemplate: '<b>gcc/CPU fraction</b>: %{y:,.4%}',
-            },
-        ]
+        return [{
+            x: data.times,
+            y: data.gcfraction,
+            type: 'scatter',
+            name: 'gc/cpu',
+            hovertemplate: '<b>gcc/CPU fraction</b>: %{y:,.4%}',
+        }, ]
     }
 
     let gcFractionLayout = {
@@ -262,7 +253,7 @@ var ui = (function () {
     };
 
 
-    let configs = function () {
+    let configs = function() {
         let plots = ['heap', 'mspan-mcache', 'size-classes', 'objects', 'gcfraction', 'goroutines'];
         let cfgs = {};
 
@@ -283,13 +274,13 @@ var ui = (function () {
         return cfgs;
     }();
 
-    m.createPlots = function (data) {
+    m.createPlots = function(data) {
         $('.ui.accordion').accordion({
             exclusive: false,
-            onOpen: function () {
+            onOpen: function() {
                 this.firstElementChild.hidden = false;
             },
-            onClose: function () {
+            onClose: function() {
                 this.firstElementChild.hidden = true;
             }
         });
@@ -311,7 +302,7 @@ var ui = (function () {
     }
 
     var updateIdx = 0;
-    m.updatePlots = function (data) {
+    m.updatePlots = function(data) {
         let gcLines = GCLines(data);
 
         heapLayout.shapes = gcLines;
@@ -365,20 +356,15 @@ var ui = (function () {
         };
 
         let fieldName = traces[traceName];
-        if (fieldName !== undefined) {
+        if (fieldName !== undefined)
             return memStatsDoc(fieldName);
-        }
-        if (traceName == 'goroutines') {
-            return "The number of goroutines"
-        }
-        if (traceName == 'live') {
-            return "The number of live objects"
-        }
-        if (traceName == 'goroutines') {
-            return "Number of the goroutines"
-        }
-        if (traceName == 'size classes') {
-            return "Reports per-size class allocation statistics"
+        switch (traceName) {
+            case "goroutines":
+                return "The number of goroutines"
+            case "live":
+                return "The number of live objects"
+            case "size classes":
+                return "Reports per-size class allocation statistics"
         }
     };
 

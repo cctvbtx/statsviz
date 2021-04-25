@@ -1,5 +1,5 @@
 // stats holds the data and function to modify it.
-var stats = (function () {
+var stats = (function() {
     var m = {};
 
     const idxHeapAlloc = 0;
@@ -31,32 +31,27 @@ var stats = (function () {
         bySize: null,
     };
 
-    m.init = function (buflen, allStats) {
+    m.init = function(buflen, allStats) {
         const extraBufferCapacity = 20; // 20% of extra (preallocated) buffer datapoints
         const bufcap = buflen + (buflen * extraBufferCapacity) / 100; // number of actual datapoints
-
         const memStats = allStats.Mem;
 
         data.times = new Buffer(buflen, bufcap);
         data.goroutines = new Buffer(buflen, bufcap);
         data.gcfraction = new Buffer(buflen, bufcap);
 
-        for (let i = 0; i < numSeriesHeap; i++) {
+        for (let i = 0; i < numSeriesHeap; i++)
             data.heap[i] = new Buffer(buflen, bufcap);
-        }
 
-        for (let i = 0; i < numSeriesMSpanMCache; i++) {
+        for (let i = 0; i < numSeriesMSpanMCache; i++)
             data.mspanMCache[i] = new Buffer(buflen, bufcap);
-        }
 
-        for (let i = 0; i < numSeriesObjects; i++) {
+        for (let i = 0; i < numSeriesObjects; i++)
             data.objects[i] = new Buffer(buflen, bufcap);
-        }
 
         // size classes heatmap
-        for (let i = 0; i < memStats.BySize.length; i++) {
+        for (let i = 0; i < memStats.BySize.length; i++)
             m.classSizes.push(memStats.BySize[i].Size);
-        }
 
         data.bySize = new Array(m.classSizes.length);
         for (let i = 0; i < data.bySize.length; i++) {
@@ -70,12 +65,9 @@ var stats = (function () {
     function updateLastGC(memStats) {
         const nanoToSeconds = 1000 * 1000 * 1000;
         let t = Math.floor(memStats.LastGC / nanoToSeconds);
-
         let lastGC = new Date(t * 1000);
-
-        if (lastGC != data.lastGCs[data.lastGCs.length - 1]) {
+        if (lastGC != data.lastGCs[data.lastGCs.length - 1])
             data.lastGCs.push(lastGC);
-        }
 
         // Remove from the lastGCs array the timestamps which are prior to
         // the minimum timestamp in 'series'.
@@ -93,7 +85,7 @@ var stats = (function () {
     // Contain indexed class sizes, this is initialized after reception of the first message.
     m.classSizes = new Array();
 
-    m.pushData = function (ts, allStats) {
+    m.pushData = function(ts, allStats) {
         data.times.push(ts); // timestamp
 
         const memStats = allStats.Mem;
@@ -124,11 +116,11 @@ var stats = (function () {
         updateLastGC(memStats);
     }
 
-    m.length = function () {
+    m.length = function() {
         return data.times.length();
     }
 
-    m.slice = function (nitems) {
+    m.slice = function(nitems) {
         const times = data.times.slice(nitems);
         const gcfraction = data.gcfraction.slice(nitems);
         const goroutines = data.goroutines.slice(nitems);

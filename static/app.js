@@ -1,8 +1,4 @@
 (function() {
-    function $(id) {
-        return document.getElementById(id);
-    }
-
     function buildWebsocketURI() {
         var loc = window.location,
             ws_prot = "ws:";
@@ -68,5 +64,4 @@
         }
         ui.updatePlots(data);
     }
-
 }());
